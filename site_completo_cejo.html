@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão Escolar - Eduque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 flex h-screen overflow-hidden">
+
+    <!-- Sidebar de Navegação -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between p-4 shadow-xl shrink-0">
+        <div>
+            <!-- Logo -->
+            <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base text-white leading-tight">Escola Eduque</h1>
+                    <span class="text-[11px] text-slate-400">Gestão Integrada</span>
+                </div>
+            </div>
+            
+            <!-- Menu Principal -->
+            <nav class="mt-6 flex flex-col gap-1.5" id="sidebar-nav">
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn active flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+                </button>
+                <button onclick="switchTab('alunos')" id="btn-alunos" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                    <i class="fa-solid fa-user-graduate w-5 text-center"></i> Alunos & Matrículas
+                </button>
+                <button onclick="switchTab('professores')" id="btn-professores" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                    <i class="fa-solid fa-chalkboard-user w-5 text-center"></i> Corpo Docente
+                </button>
+                <button onclick="switchTab('notas')" id="btn-notas" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                    <i class="fa-solid fa-pen-to-square w-5 text-center"></i> Notas & Frequência
+                </button>
+                <button onclick="switchTab('turmas')" id="btn-turmas" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                    <i class="fa-solid fa-layer-group w-5 text-center"></i> Turmas & Grade
+                </button>
+                <button onclick="switchTab('financeiro')" id="btn-financeiro" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                    <i class="fa-solid fa-wallet w-5 text-center"></i> Financeiro
+                </button>
+                <button onclick="switchTab('comunicados')" id="btn-comunicados" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                    <i class="fa-solid fa-bullhorn w-5 text-center"></i> Mural & Avisos
+                </button>
+            </nav>
+        </div>
+
+        <!-- Perfil do Usuário -->
+        <div class="border-t border-slate-800 pt-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-sm shadow">
+                    AD
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-white">Direção Geral</p>
+                    <p class="text-[10px] text-slate-400">admin@eduque.com.br</p>
+                </div>
+            </div>
+            <button class="text-slate-400 hover:text-red-400 transition" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
+        <!-- Header Fixo -->
+        <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+            <div>
+                <h2 id="page-title" class="text-xl font-bold text-slate-800">Dashboard Geral</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Visão geral do ano letivo de 2026</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="global-search" onkeyup="searchAlunos(this.value)" placeholder="Buscar aluno ou matrícula..." class="bg-slate-100 border border-slate-200 text-xs rounded-xl pl-8 pr-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                </div>
+                <button class="relative p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition">
+                    <i class="fa-regular fa-bell text-base"></i>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Área de Módulos -->
+        <div class="p-8 space-y-6">
+            
+            <!-- Dashboard -->
+            <section id="tab-dashboard" class="tab-content block space-y-6">
+                <!-- Métricas -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total de Alunos</p>
+                            <h3 class="text-2xl font-black text-slate-800 mt-1">1,240</h3>
+                            <span class="text-[11px] text-emerald-600 font-medium"><i class="fa-solid fa-arrow-up"></i> +5.2% este ano</span>
+                        </div>
+                        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Professores</p>
+                            <h3 class="text-2xl font-black text-slate-800 mt-1">68</h3>
+                            <span class="text-[11px] text-slate-400 font-medium">100% ativos</span>
+                        </div>
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-chalkboard-user"></i></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Turmas Ativas</p>
+                            <h3 class="text-2xl font-black text-slate-800 mt-1">32</h3>
+                            <span class="text-[11px] text-slate-400 font-medium">Manhã e Tarde</span>
+                        </div>
+                        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-school"></i></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Adimplência</p>
+                            <h3 class="text-2xl font-black text-slate-800 mt-1">96.8%</h3>
+                            <span class="text-[11px] text-emerald-600 font-medium"><i class="fa-solid fa-check"></i> Meta atingida</span>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-circle-dollar-to-slot"></i></div>
+                    </div>
+                </div>
+
+                <!-- Quadro de Alertas e Ações -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-slate-800">Mural de Avisos Recentes</h3>
+                            <button onclick="switchTab('comunicados')" class="text-xs font-semibold text-indigo-600 hover:underline">Ver todos</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                    <div>
+                                        <p class="font-semibold text-sm text-slate-800">Reunião de Pais e Mestres</p>
+                                        <p class="text-xs text-slate-400">Sexta-feira às 18:00 — Auditório Principal</p>
+                                    </div>
+                                </div>
+                                <span class="bg-indigo-100 text-indigo-700 text-[11px] font-semibold px-2.5 py-1 rounded-full">Geral</span>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-amber-500"></div>
+                                    <div>
+                                        <p class="font-semibold text-sm text-slate-800">Fechamento do 2º Trimestre</p>
+                                        <p class="text-xs text-slate-400">Prazo final de lançamento de notas pelos professores</p>
+                                    </div>
+                                </div>
+                                <span class="bg-amber-100 text-amber-700 text-[11px] font-semibold px-2.5 py-1 rounded-full">Docentes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-4">Ações Rápidas</h3>
+                            <div class="space-y-2">
+                                <button onclick="openModal()" class="w-full text-left bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl text-xs font-semibold transition border border-slate-100 flex items-center gap-3">
+                                    <i class="fa-solid fa-user-plus text-indigo-500"></i> Matricular Novo Aluno
+                                </button>
+                                <button onclick="switchTab('notas')" class="w-full text-left bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl text-xs font-semibold transition border border-slate-100 flex items-center gap-3">
+                                    <i class="fa-solid fa-file-signature text-emerald-500"></i> Lançar Boletim / Diário
+                                </button>
+                                <button onclick="switchTab('financeiro')" class="w-full text-left bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl text-xs font-semibold transition border border-slate-100 flex items-center gap-3">
+                                    <i class="fa-solid fa-receipt text-amber-500"></i> Emitir Segunda Via de Mensalidade
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alunos & Matrículas -->
+            <section id="tab-alunos" class="tab-content hidden">
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800">Alunos Cadastrados</h3>
+                            <p class="text-xs text-slate-400">Gerencie dados cadastrais e situação de matrículas</p>
+                        </div>
+                        <button onclick="openModal()" class="bg-indigo-600 text-white text-xs px-4 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-plus"></i> Novo Aluno
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                                    <th class="p-4">Matrícula</th>
+                                    <th class="p-4">Aluno</th>
+                                    <th class="p-4">Turma</th>
+                                    <th class="p-4">Responsável</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-xs" id="aluno-table-body">
+                                <tr class="aluno-row">
+                                    <td class="p-4 font-mono text-slate-500 font-bold">2026-0101</td>
+                                    <td class="p-4 font-semibold text-slate-800">Ana Clara Silva</td>
+                                    <td class="p-4 text-slate-600">3º Ano A - Médio</td>
+                                    <td class="p-4 text-slate-600">Roberto Silva (Pai)</td>
+                                    <td class="p-4"><span class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Ativo</span></td>
+                                    <td class="p-4 text-right space-x-2">
+                                        <button class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-pen"></i></button>
+                                        <button class="text-slate-400 hover:text-red-600" onclick="deleteRow(this)"><i class="fa-solid fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="aluno-row">
+                                    <td class="p-4 font-mono text-slate-500 font-bold">2026-0102</td>
+                                    <td class="p-4 font-semibold text-slate-800">Lucas Santos Oliveira</td>
+                                    <td class="p-4 text-slate-600">1º Ano B - Médio</td>
+                                    <td class="p-4 text-slate-600">Mariana Santos (Mãe)</td>
+                                    <td class="p-4"><span class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Ativo</span></td>
+                                    <td class="p-4 text-right space-x-2">
+                                        <button class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-pen"></i></button>
+                                        <button class="text-slate-400 hover:text-red-600" onclick="deleteRow(this)"><i class="fa-solid fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Corpo Docente -->
+            <section id="tab-professores" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">PR</div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Prof. Ricardo Alves</h4>
+                            <p class="text-xs text-slate-400">Matemática & Física</p>
+                            <span class="inline-block mt-2 text-[10px] bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded">32h / semana</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">PC</div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Profa. Camila Lima</h4>
+                            <p class="text-xs text-slate-400">Língua Portuguesa & Literatura</p>
+                            <span class="inline-block mt-2 text-[10px] bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded">40h / semana</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notas & Frequência -->
+            <section id="tab-notas" class="tab-content hidden">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800">Lançamento de Diário de Classe</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <select class="border border-slate-200 text-xs rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option>Selecione a Turma...</option>
+                            <option>3º Ano A - Ensino Médio</option>
+                            <option>1º Ano B - Ensino Médio</option>
+                        </select>
+                        <select class="border border-slate-200 text-xs rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option>Selecione a Disciplina...</option>
+                            <option>Matemática</option>
+                            <option>História</option>
+                        </select>
+                        <select class="border border-slate-200 text-xs rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option>1º Trimestre</option>
+                            <option>2º Trimestre</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Turmas & Grade -->
+            <section id="tab-turmas" class="tab-content hidden">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <h3 class="font-bold text-slate-800 mb-2">Estrutura de Turmas & Salas</h3>
+                    <p class="text-xs text-slate-400">Mapeamento de horários e distribuição de salas presenciais.</p>
+                </div>
+            </section>
+
+            <!-- Financeiro -->
+            <section id="tab-financeiro" class="tab-content hidden">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800">Controle Financeiro de Mensalidades</h3>
+                    <p class="text-xs text-slate-400">Emissão de boletos, histórico de pagamentos e controle de inadimplência.</p>
+                </div>
+            </section>
+
+            <!-- Mural & Comunicados -->
+            <section id="tab-comunicados" class="tab-content hidden">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800">Envio de Comunicados aos Pais</h3>
+                    <p class="text-xs text-slate-400">Envio de circulares, recados e avisos urgentes via Portal da Família.</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Modal: Novo Aluno -->
+    <div id="modal-aluno" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800 text-base">Cadastrar Novo Aluno</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="form-aluno" onsubmit="addAluno(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nome Completo</label>
+                    <input type="text" id="input-nome" required class="w-full border border-slate-200 text-xs rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Turma</label>
+                    <select id="input-turma" class="w-full border border-slate-200 text-xs rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option>3º Ano A - Médio</option>
+                        <option>1º Ano B - Médio</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Responsável</label>
+                    <input type="text" id="input-resp" required class="w-full border border-slate-200 text-xs rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm">Salvar Aluno</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Principal JS -->
+    <script>
+        const titles = {
+            'dashboard': 'Dashboard Geral',
+            'alunos': 'Gestão de Alunos & Matrículas',
+            'professores': 'Corpo Docente',
+            'notas': 'Lançamento de Notas & Frequência',
+            'turmas': 'Turmas & Grade Horária',
+            'financeiro': 'Módulo Financeiro',
+            'comunicados': 'Mural de Comunicados'
+        };
+
+        function switchTab(tabId) {
+            // Ocultar todas as abas
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            
+            // Estilizar botões inativos
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
+                btn.classList.add('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+            });
+
+            // Ativar a aba selecionada
+            const targetTab = document.getElementById('tab-' + tabId);
+            if (targetTab) targetTab.classList.remove('hidden');
+
+            // Ativar estilo do botão clicado
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+                activeBtn.classList.remove('text-slate-300', 'hover:bg-slate-800');
+            }
+
+            // Atualizar título da página
+            document.getElementById('page-title').innerText = titles[tabId] || 'Gestão Escolar';
+        }
+
+        function searchAlunos(query) {
+            const rows = document.querySelectorAll('.aluno-row');
+            const q = query.toLowerCase();
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(q) ? '' : 'none';
+            });
+        }
+
+        function openModal() {
+            document.getElementById('modal-aluno').classList.remove('hidden');
+            document.getElementById('modal-aluno').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-aluno').classList.add('hidden');
+            document.getElementById('modal-aluno').classList.remove('flex');
+        }
+
+        function addAluno(e) {
+            e.preventDefault();
+            const nome = document.getElementById('input-nome').value;
+            const turma = document.getElementById('input-turma').value;
+            const resp = document.getElementById('input-resp').value;
+            const mat = '2026-' + Math.floor(1000 + Math.random() * 9000);
+
+            const tbody = document.getElementById('aluno-table-body');
+            const newRow = document.createElement('tr');
+            newRow.className = 'aluno-row';
+            newRow.innerHTML = `
+                <td class="p-4 font-mono text-slate-500 font-bold">${mat}</td>
+                <td class="p-4 font-semibold text-slate-800">${nome}</td>
+                <td class="p-4 text-slate-600">${turma}</td>
+                <td class="p-4 text-slate-600">${resp}</td>
+                <td class="p-4"><span class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Ativo</span></td>
+                <td class="p-4 text-right space-x-2">
+                    <button class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-pen"></i></button>
+                    <button class="text-slate-400 hover:text-red-600" onclick="deleteRow(this)"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+            closeModal();
+            document.getElementById('form-aluno').reset();
+            switchTab('alunos');
+        }
+
+        function deleteRow(btn) {
+            if (confirm('Deseja remover este registro?')) {
+                btn.closest('tr').remove();
+            }
+        }
+
+        // Inicializar na aba Dashboard
+        document.addEventListener('DOMContentLoaded', () => switchTab('dashboard'));
+    </script>
+</body>
+</html>
